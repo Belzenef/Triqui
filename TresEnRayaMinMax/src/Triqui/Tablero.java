@@ -2,7 +2,7 @@ package Triqui;
 
 public class Tablero {
 
-	// Respresentación de estados
+	// Respresentacion de estados
 	int matrizTablero[][] = new int[3][3];
 	
 	// Tests
@@ -10,15 +10,13 @@ public class Tablero {
 		Tablero Tab = new Tablero();
 		System.out.println("ok");
 		System.out.println(Tab.toString());
-		Tab.set(0,0,-1);
-		Tab.set(0,2,-2);
+		Tab.set(0,2,-1);
+		//Tab.set(0,2,-2);
 		System.out.println(Tab.toString());
-		int[][] M = Tab.evaluar(-1);
-		Tablero test = new Tablero(M);
-		System.out.println(test.toString());
-		int[][] M2 = Tab.evaluar(-2);
-		Tablero test2 = new Tablero(M2);
-		System.out.println(test2.toString());
+		int M = Tab.evaluar(true);
+		System.out.println(M);
+		int M2 = Tab.evaluar(false);
+		System.out.println(M2);
 	}
 
 	// Constructores
@@ -30,40 +28,68 @@ public class Tablero {
 	}
 	
 	
-	//Funcion heuristica 
-	public int[][] evaluar(int e) {
-		int matriz[][] = new int[3][3];
+	// Funcion heuristica 
+	public int evaluar(boolean turnoHumano) {
+		int result = 0;
+		int good;
+		int bad;
+		if(turnoHumano) {
+			good=-1;
+			bad=-2;
+		}else {
+			good=-2;
+			bad=-1;
+		}
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				if (matrizTablero[i][j] != -1 && matrizTablero[i][j] != -2 ) {
-					int count=0;
+				if (matrizTablero[i][j] == good ) {
 					// numero de e en linea i
+					int linea=0;
 					for (int p = 0; p < 3; p++) {
-						if(matrizTablero[i][p]==e) {
-							count++;
+						if(matrizTablero[i][p]==good) {
+							linea++;
+						}
+						if(matrizTablero[i][p]==bad) {
+							linea=0;
+							p=4;
 						}
 					}
+					result+=linea;
+					
 					// numero de e en columna j
+					int col=0;
 					for (int p = 0; p < 3; p++) {
-						if(matrizTablero[p][j]==e) {
-							count++;
+						if(matrizTablero[p][j]==good) {
+							col++;
+						}
+						if(matrizTablero[p][i]==bad) {
+							col=0;
+							p=4;
 						}
 					}
+					result+=col;
+					
 					// numero de e en diagonal
+					int diag=0;
 					if(i==j) {
 						for (int p = 0; p < 3; p++) {
-							if(matrizTablero[p][p]==e) {
-								count++;
+							if(matrizTablero[p][p]==good) {
+								diag++;
+							}
+							if(matrizTablero[p][p]==bad) {
+								diag=0;
+								p=4;
 							}
 						}
+						result+=diag;
 					}
-					matriz[i][j]=count;
-				}else {matriz[i][j]=matrizTablero[i][j];}
+				}
 			}
 		}
-		return matriz;
+		return result;
 	}
 	
+	// getters y setters
 	public void set(int i, int j, int x) {
 		matrizTablero[i][j] = x;
 	}
@@ -81,7 +107,8 @@ public class Tablero {
 		}
 		return matriz;
 	}
-
+	
+	// vizualisacion
 	public String toString() {
 		String result = "";
 		for (int i = 0; i < 3; i++) {

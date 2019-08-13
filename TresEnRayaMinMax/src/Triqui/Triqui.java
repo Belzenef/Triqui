@@ -1,6 +1,5 @@
 package Triqui;
 
-import java.awt.List;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -10,23 +9,24 @@ public class Triqui {
 	// Indicador de turno de jugador
 	boolean turnoHumano;
 
-	/**
-	 * Run
-	 */
+	// Iniciar el juego
 	public static void main(String[] args) {
 		Triqui juego = new Triqui();
 		System.out.println("ok");
 		System.out.println(juego.tabla.toString());
+		juego.tabla.set(1,1,-2);
 		ArrayList<Tablero> L = juego.sucesores();
 		for (int i = 0; i < L.size() ; i++) {
 			System.out.println(L.get(i).toString());
 		}
 	}
-
+	
+	// Constructor
 	public Triqui() {
 		turnoHumano=true;
 	}
-
+	
+	// Entrada del usuario
 	public void rellenar() {
 		Scanner entrada = new Scanner(System.in);
 		System.out.println("linea?");
@@ -36,7 +36,8 @@ public class Triqui {
 		tabla.set(linea, colomna, -1);
 		entrada.close();
 	}
-
+	
+	// Generar sucesores del estado actual
 	public ArrayList<Tablero> sucesores() {
 		ArrayList<Tablero> result = new ArrayList<Tablero>();
 		int c;
@@ -54,5 +55,18 @@ public class Triqui {
 		}
 		return result;
 	}
-
+	
+	// Elegir el mejor sucesor (Min-Max)
+	public void elegir() {
+		int c;
+		if(turnoHumano) {
+			c=-1;
+		}else {c=-2;}
+		ArrayList<Tablero> posibilidades = this.sucesores();
+		int mejorIndex = 0;
+		int mejorScore = posibilidades.get(0).evaluar(turnoHumano);
+		
+		for (int i = 1; i < posibilidades.size(); i++) {	
+		}
+	}
 }
