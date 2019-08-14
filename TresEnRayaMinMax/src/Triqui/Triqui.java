@@ -57,19 +57,19 @@ public class Triqui {
 	// Verificar si alguien gano
    	public boolean gano(int c){
 		for (int i = 0; i < 3; i++) {
-			if( matrizTablero[i][0]==c && matrizTablero[i][1]==c && matrizTablero[i][2]==c) {
+			if( tabla.getCasilla(i,0)==c && tabla.getCasilla(i,1)==c && tabla.getCasilla(i,2)==c) {
                 return true;
             }
         }
         for (int i = 0; i < 3; i++) {
-			if( matrizTablero[0][i]==c && matrizTablero[1][i]==c && matrizTablero[2][i]==c) {
+			if( tabla.getCasilla(0,i)==c && tabla.getCasilla(1,i)==c && tabla.getCasilla(2,i)==c) {
                 return true;
             }
         }
-        if( matrizTablero[0][0]==c && matrizTablero[1][1]==c && matrizTablero[2][2]==c) {
+        if( tabla.getCasilla(1,1)==c && tabla.getCasilla(0,0)==c && tabla.getCasilla(2,2)==c) {
         	return true;
         }
-        if( matrizTablero[1][1]==c && matrizTablero[0][2]==c && matrizTablero[2][0]==c) {
+        if( tabla.getCasilla(1,1)==c && tabla.getCasilla(0,2)==c && tabla.getCasilla(2,0)==c) {
       		return true;
         }
     	return false;
@@ -98,7 +98,7 @@ public class Triqui {
 		}
       	
     }
-        for coup in coupsPossibles:
+        /*for coup in coupsPossibles:
             newPos = deepcopy (self)
             newPos. joue (joueur, coup // 3, coup % 3)
             cp = deepcopy (coupsPossibles)
@@ -125,33 +125,5 @@ public class Triqui {
             if racine:
                 return (which)
             else:
-                return (v)
-  
-  	public int minimax(node, depth, maximizingPlayer){
-      if self. agagne (joueur):
-            self.__str__ ()
-            if moi:
-                return (+1)
-            else:
-                return (-1)
-      if self. agagne (autre):
-            self.__str__ ()
-            if moi:
-                return (-1)
-            else:
-                return (+1)
-      
-    }
-    if depth = 0 or node is a terminal node then
-        return the heuristic value of node
-    if maximizingPlayer then
-        value := −∞
-        for each child of node do
-            value := max(value, minimax(child, depth − 1, FALSE))
-        return value
-    else (* minimizing player *)
-        value := +∞
-        for each child of node do
-            value := min(value, minimax(child, depth − 1, TRUE))
-        return value
+                return (v)*/
 }
