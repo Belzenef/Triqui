@@ -10,8 +10,10 @@ public class Tablero {
 		Tablero Tab = new Tablero();
 		System.out.println("ok");
 		System.out.println(Tab.toString());
-		Tab.set(0,2,-1);
-		//Tab.set(0,2,-2);
+		Tab.set(0,0,-1);
+		Tab.set(1,2,-1);
+		Tab.set(0,1,-2);
+		Tab.set(0,2,-2);
 		System.out.println(Tab.toString());
 		int M = Tab.evaluar(true);
 		System.out.println(M);
@@ -43,45 +45,39 @@ public class Tablero {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				if (matrizTablero[i][j] == good ) {
-					// numero de e en linea i
-					int linea=0;
+				    result+=2;
+				    if(i==j || (i==0 && j==2) || (i==2 && j==0)) {
+				        result++;
+				    }
+				} else if (matrizTablero[i][j] == bad ) {
+				    
+					// numero de posibilidades bloqueadas en la linea
 					for (int p = 0; p < 3; p++) {
 						if(matrizTablero[i][p]==good) {
-							linea++;
-						}
-						if(matrizTablero[i][p]==bad) {
-							linea=0;
-							p=4;
+							result--;
 						}
 					}
-					result+=linea;
 					
-					// numero de e en columna j
-					int col=0;
+					// numero de posibilidades bloqueadas en la colomna
 					for (int p = 0; p < 3; p++) {
 						if(matrizTablero[p][j]==good) {
-							col++;
-						}
-						if(matrizTablero[p][i]==bad) {
-							col=0;
-							p=4;
+							result--;
 						}
 					}
-					result+=col;
-					
-					// numero de e en diagonal
-					int diag=0;
+
+					// numero de posibilidades bloqueadas en las diagonales
 					if(i==j) {
 						for (int p = 0; p < 3; p++) {
 							if(matrizTablero[p][p]==good) {
-								diag++;
-							}
-							if(matrizTablero[p][p]==bad) {
-								diag=0;
-								p=4;
+								result--;
 							}
 						}
-						result+=diag;
+					}else if (i==0 && j==2){
+					    if(matrizTablero[1][1]==good){result--;}
+					    if(matrizTablero[2][0]==good){result--;}
+					}else if (i==2 && j==0){
+					    if(matrizTablero[1][1]==good){result--;}
+					    if(matrizTablero[0][2]==good){result--;}
 					}
 				}
 			}
@@ -119,7 +115,7 @@ public class Tablero {
 				} else if (matrizTablero[i][j] == -2) {
 					result += "O|";
 				} else {
-					result += String.valueOf(matrizTablero[i][j])+"|";// String.valueOf(matrizTablero[i][j]);
+					result += " |";// String.valueOf(matrizTablero[i][j]);
 				}
 			}
 			result += "\n";
