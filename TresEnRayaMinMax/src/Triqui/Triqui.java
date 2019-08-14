@@ -1,3 +1,5 @@
+package Triqui;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -12,11 +14,30 @@ public class Triqui {
 		Triqui juego = new Triqui();
 		System.out.println("ok");
 		System.out.println(juego.tabla.toString());
-		juego.tabla.set(1,1,-2);
-		ArrayList<Tablero> L = juego.sucesores();
+		
+		// Humano starts
+		juego.tabla.set(1,1,"X");
+		System.out.println(juego.tabla.toString());
+		juego.turnoHumano=false;
+		
+		// IA plays
+		ArrayList<Tablero> L = juego.sucesores(juego.tabla);
 		for (int i = 0; i < L.size() ; i++) {
 			System.out.println(L.get(i).toString());
 		}
+		juego.turnoIA();
+		System.out.println("ok");
+		System.out.println(juego.tabla.toString());
+		
+		// Humano plays
+		juego.tabla.set(0,2,"X");
+		juego.turnoHumano=false;
+		System.out.println(juego.tabla.toString());
+		
+		// IA plays
+		juego.turnoIA();
+		System.out.println("ok");
+		System.out.println(juego.tabla.toString());
 	}
 	
 	// Constructor
@@ -31,21 +52,21 @@ public class Triqui {
 		int linea = entrada.nextInt();
 		System.out.println("colomna?");
 		int colomna = entrada.nextInt();
-		tabla.set(linea, colomna, -1);
+		tabla.set(linea, colomna,"X");
 		entrada.close();
 	}
 	
-	// Generar sucesores del estado actual
-	public ArrayList<Tablero> sucesores() {
+	// Generar sucesores de un estado
+	public ArrayList<Tablero> sucesores(Tablero estado) {
 		ArrayList<Tablero> result = new ArrayList<Tablero>();
-		int c;
+		String c;
 		if(turnoHumano) {
-			c=-1;
-		}else {c=-2;}
+			c="X";
+		}else {c="O";}
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				if (tabla.getCasilla(i,j) != -1 && tabla.getCasilla(i,j) != -2 ) {
-					Tablero tab = new Tablero(tabla.getMatriz());
+				if (estado.getCasilla(i,j) != "X" && estado.getCasilla(i,j) != "O" ) {
+					Tablero tab = new Tablero(estado.getMatriz());
 					tab.set(i, j, c);
 					result.add(tab);
 				}
@@ -53,77 +74,77 @@ public class Triqui {
 		}
 		return result;
 	}
-  
-	// Verificar si alguien gano
-   	public boolean gano(int c){
-		for (int i = 0; i < 3; i++) {
-			if( tabla.getCasilla(i,0)==c && tabla.getCasilla(i,1)==c && tabla.getCasilla(i,2)==c) {
-                return true;
-            }
-        }
-        for (int i = 0; i < 3; i++) {
-			if( tabla.getCasilla(0,i)==c && tabla.getCasilla(1,i)==c && tabla.getCasilla(2,i)==c) {
-                return true;
-            }
-        }
-        if( tabla.getCasilla(1,1)==c && tabla.getCasilla(0,0)==c && tabla.getCasilla(2,2)==c) {
-        	return true;
-        }
-        if( tabla.getCasilla(1,1)==c && tabla.getCasilla(0,2)==c && tabla.getCasilla(2,0)==c) {
-      		return true;
-        }
-    	return false;
-	}
 	
-	// Elegir el mejor sucesor (Min-Max)
-    public int minmax(int[][] estado, int profundidad, boolean turnoIA){
-      	int c;
-		if(turnoIA) {
-			c=-2;
-		}else {c=-1;}
-		if(gano(-1)){
-        	System.out.println("X gano");
-          	if(c==-1){return 1;}
-          	else{return -1;}
-      	}else if(gano(-2)){
-			System.out.println("O gano");
-          	if(c==-1){return -1;}
-          	else{return 1;}
-      	}
-      	ArrayList<Tablero> posibilidades = this.sucesores();
-      	if(posibilidades.size()==0){return 0;}
-      	int mejorIndex = 0;
-		int mejorScore = posibilidades.get(0).evaluar(turnoIA);
-		for (int i = 0; i < posibilidades.size(); i++) {	
+   	// Simulacion del turno de la IA
+   	public void turnoIA() {
+   		turnoHumano=false;
+   		int max, score, profundidad=9;
+   		Tablero mejor, test;
+   		ArrayList<Tablero> posibilidades = sucesores(tabla);
+   		mejor = posibilidades.get(0);
+   		score = mejor.evaluar(turnoHumano);
+   		max = score;
+   		for (int i = 1; i < posibilidades.size(); i++) {	
+			test = posibilidades.get(i);
+			score = min(test,profundidad);
+			if(score>max) {
+				max = score;
+				mejor = test;
+			}
 		}
-      	
-    }
-        /*for coup in coupsPossibles:
-            newPos = deepcopy (self)
-            newPos. joue (joueur, coup // 3, coup % 3)
-            cp = deepcopy (coupsPossibles)
-            cp. remove (coup)
-            valeur [coup] = newPos. minmax (autre, joueur, not moi, cp, False)
-        if moi:
-            v = valeur [coupsPossibles [0]]
-            which = coupsPossibles [0]
-            for coup in coupsPossibles:
-                if valeur [coup] > v:
-                    v = valeur [coup]
-                    which = coup
-            if racine:
-                return (which)
-            else:
-                return (v)
-        else:
-            v = valeur [coupsPossibles [0]]
-            which = coupsPossibles [0]
-            for coup in coupsPossibles:
-                if valeur [coup] < v:
-                    v = valeur [coup]
-                    which = coup
-            if racine:
-                return (which)
-            else:
-                return (v)*/
+		tabla=mejor;
+		turnoHumano=true;
+		System.out.println(max);
+   	}
+   	
+	// Elegir el mejor sucesor (Min-Max)
+   	public int min(Tablero tab, int profundidad) {
+   		// generar hijos del estado actual
+   		ArrayList<Tablero> posibilidades = sucesores(tab);
+   		
+   		// verificar si el estado actual es una hoja del arbol
+   		if(tab.gano("X") || tab.gano("O") || posibilidades.size()==0 ){
+   			return tab.evaluar(true);
+      	}
+   		
+   		int minScore = 100, score;
+   		Tablero mejor, test;
+   		mejor = posibilidades.get(0);
+   		score = mejor.evaluar(true);
+   		minScore = score;
+   		for (int i = 1; i < posibilidades.size(); i++) {
+   			test = posibilidades.get(i);
+   			score = max(test,profundidad-1);
+			if(score<minScore) {
+				minScore = score;
+				mejor = test;
+			}
+   		}
+   		return minScore;
+   	}
+   	
+   	public int max(Tablero tab, int profundidad) {
+   		// generar hijos del estado actual
+   		ArrayList<Tablero> posibilidades = sucesores(tab);
+   		
+   		// verificar si el estado actual es una hoja del arbol
+   		if(tab.gano("X") || tab.gano("O") || posibilidades.size()==0 ){
+   			return tab.evaluar(false);
+      	}
+   		
+   		int maxScore = -100, score;
+   		Tablero mejor, test;
+   		mejor = posibilidades.get(0);
+   		score = mejor.evaluar(true);
+   		maxScore = score;
+   		for (int i = 1; i < posibilidades.size(); i++) {
+   			test = posibilidades.get(i);
+   			score = min(test,profundidad-1);
+			if(score>maxScore) {
+				maxScore = score;
+				mejor = test;
+			}
+   		}
+   		return maxScore;
+   	}
 }
