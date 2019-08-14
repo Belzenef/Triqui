@@ -95,7 +95,7 @@ public class Tablero {
    		}
    		
    		// Si la partida no esta terminada
-		int result = 0;
+		int result = 0, countGood=0, countBad=0;;
 		String good, bad;
 		if(turnoHumano) {
 			good="X";
@@ -104,45 +104,86 @@ public class Tablero {
 			good="O";
 			bad="X";
 		}
+	            
+		// Lineas
 		for (int i = 0; i < 3; i++) {
+			countGood=0;
+			countBad=0;
 			for (int j = 0; j < 3; j++) {
-				if (matrizTablero[i][j] == good ) {
-				    result+=2;
-				    if(i==j || (i==0 && j==2) || (i==2 && j==0)) {
-				        result++;
-				    }
-				} else if (matrizTablero[i][j] == bad ) {
-				    
-					// numero de posibilidades bloqueadas en la linea
-					for (int p = 0; p < 3; p++) {
-						if(matrizTablero[i][p]==good) {
-							result--;
-						}
-					}
-					
-					// numero de posibilidades bloqueadas en la colomna
-					for (int p = 0; p < 3; p++) {
-						if(matrizTablero[p][j]==good) {
-							result--;
-						}
-					}
-
-					// numero de posibilidades bloqueadas en las diagonales
-					if(i==j) {
-						for (int p = 0; p < 3; p++) {
-							if(matrizTablero[p][p]==good) {
-								result--;
-							}
-						}
-					}else if (i==0 && j==2){
-					    if(matrizTablero[1][1]==good){result--;}
-					    if(matrizTablero[2][0]==good){result--;}
-					}else if (i==2 && j==0){
-					    if(matrizTablero[1][1]==good){result--;}
-					    if(matrizTablero[0][2]==good){result--;}
-					}
-				}
+				if(matrizTablero[i][j] == good) {countGood++;}
+				else if(matrizTablero[i][j] == bad) {countBad++;}
 			}
+			if(countGood!=0 && countBad!=0) {
+				result+=0;
+			}else if(countGood==2) {
+				result+=30;
+			}else if(countBad==2) {
+				result+=-30;
+			}else if(countGood==1) {
+				result+=10;
+			}else if(countBad==1) {
+				result+=-10;
+			}
+		}
+			
+		// Columnas
+		for (int i = 0; i < 3; i++) {
+			countGood=0; 
+			countBad=0;
+			for (int j = 0; j < 3; j++) {
+				if(matrizTablero[j][i] == good) {countGood++;}
+				else if(matrizTablero[j][i] == bad) {countBad++;}
+			}
+			if(countGood!=0 && countBad!=0) {
+				result+=0;
+			}else if(countGood==2) {
+				result+=30;
+			}else if(countBad==2) {
+				result+=-30;
+			}else if(countGood==1) {
+				result+=10;
+			}else if(countBad==1) {
+				result+=-10;
+			}
+		}
+		// Diagonal A
+		countGood=0;
+		countBad=0;
+		for (int i = 0; i < 3; i++) {
+			if(matrizTablero[i][i] == good) {countGood++;}
+			else if(matrizTablero[i][i] == bad) {countBad++;}
+		}
+		if(countGood!=0 && countBad!=0) {
+			result+=0;
+		}else if(countGood==2) {
+			result+=30;
+		}else if(countBad==2) {
+			result+=-30;
+		}else if(countGood==1) {
+			result+=10;
+		}else if(countBad==1) {
+			result+=-10;
+		}
+		
+		// Diagonal B
+		countGood=0;
+		countBad=0;
+		int[] diagI= {2,1,0};
+		int[] diagJ= {0,1,2};
+		for (int i = 0; i < 3; i++) {
+			if(matrizTablero[diagI[i]][diagJ[i]] == good) {countGood++;}
+			else if(matrizTablero[diagI[i]][diagJ[i]]  == bad) {countBad++;}
+		}
+		if(countGood!=0 && countBad!=0) {
+			result+=0;
+		}else if(countGood==2) {
+			result+=30;
+		}else if(countBad==2) {
+			result+=-30;
+		}else if(countGood==1) {
+			result+=10;
+		}else if(countBad==1) {
+			result+=-10;
 		}
 		return result;
 	}

@@ -2,6 +2,7 @@ package Triqui;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Collections;
 
 public class Triqui {
 	// Estructura de memoria con las casillas del juego
@@ -12,31 +13,29 @@ public class Triqui {
 	// Iniciar el juego
 	public static void main(String[] args) {
 		Triqui juego = new Triqui();
-		System.out.println("ok");
+		System.out.println("Init Game");
 		System.out.println(juego.tabla.toString());
 		
 		// Humano starts
+		System.out.println("Humano :");
 		juego.tabla.set(1,1,"X");
 		System.out.println(juego.tabla.toString());
 		juego.turnoHumano=false;
 		
 		// IA plays
-		ArrayList<Tablero> L = juego.sucesores(juego.tabla);
-		for (int i = 0; i < L.size() ; i++) {
-			System.out.println(L.get(i).toString());
-		}
 		juego.turnoIA();
-		System.out.println("ok");
+		System.out.println("IA :");
 		System.out.println(juego.tabla.toString());
 		
 		// Humano plays
+		System.out.println("Humano :");
 		juego.tabla.set(0,2,"X");
 		juego.turnoHumano=false;
 		System.out.println(juego.tabla.toString());
 		
 		// IA plays
 		juego.turnoIA();
-		System.out.println("ok");
+		System.out.println("IA :");
 		System.out.println(juego.tabla.toString());
 	}
 	
@@ -57,10 +56,10 @@ public class Triqui {
 	}
 	
 	// Generar sucesores de un estado
-	public ArrayList<Tablero> sucesores(Tablero estado) {
+	public ArrayList<Tablero> sucesores(Tablero estado, boolean turnoH) {
 		ArrayList<Tablero> result = new ArrayList<Tablero>();
 		String c;
-		if(turnoHumano) {
+		if(turnoH) {
 			c="X";
 		}else {c="O";}
 		for (int i = 0; i < 3; i++) {
@@ -72,7 +71,9 @@ public class Triqui {
 				}
 			}
 		}
-		return result;
+		// to avoid IA always picking the first option
+		Collections.shuffle(result);
+		return  result;
 	}
 	
    	// Simulacion del turno de la IA
@@ -80,7 +81,7 @@ public class Triqui {
    		turnoHumano=false;
    		int max, score, profundidad=9;
    		Tablero mejor, test;
-   		ArrayList<Tablero> posibilidades = sucesores(tabla);
+   		ArrayList<Tablero> posibilidades = sucesores(tabla,turnoHumano);
    		mejor = posibilidades.get(0);
    		score = mejor.evaluar(turnoHumano);
    		max = score;
@@ -94,13 +95,12 @@ public class Triqui {
 		}
 		tabla=mejor;
 		turnoHumano=true;
-		System.out.println(max);
    	}
    	
 	// Elegir el mejor sucesor (Min-Max)
    	public int min(Tablero tab, int profundidad) {
    		// generar hijos del estado actual
-   		ArrayList<Tablero> posibilidades = sucesores(tab);
+   		ArrayList<Tablero> posibilidades = sucesores(tab,true);
    		
    		// verificar si el estado actual es una hoja del arbol
    		if(tab.gano("X") || tab.gano("O") || posibilidades.size()==0 ){
@@ -125,7 +125,7 @@ public class Triqui {
    	
    	public int max(Tablero tab, int profundidad) {
    		// generar hijos del estado actual
-   		ArrayList<Tablero> posibilidades = sucesores(tab);
+   		ArrayList<Tablero> posibilidades = sucesores(tab,false);
    		
    		// verificar si el estado actual es una hoja del arbol
    		if(tab.gano("X") || tab.gano("O") || posibilidades.size()==0 ){
@@ -135,7 +135,7 @@ public class Triqui {
    		int maxScore = -100, score;
    		Tablero mejor, test;
    		mejor = posibilidades.get(0);
-   		score = mejor.evaluar(true);
+   		score = mejor.evaluar(false);
    		maxScore = score;
    		for (int i = 1; i < posibilidades.size(); i++) {
    			test = posibilidades.get(i);
