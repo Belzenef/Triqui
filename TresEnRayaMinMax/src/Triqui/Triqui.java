@@ -10,21 +10,25 @@ public class Triqui {
 	// Indicador de turno de jugador
 	boolean turnoHumano;
 
-	// Iniciar el juego
+
 	public static void main(String[] args) {
 		Triqui juego = new Triqui();
 		System.out.println("Init Game");
 		System.out.println(juego.tabla.toString());
 
 		juego.turno(juego);
-
 	}
 
-	// Constructor
+	
 	public Triqui() {
 		turnoHumano = true;
 	}
 
+	/**
+	 * Gestor de turnos
+	 * @param juego
+	 * @return
+	 */
 	public boolean turno(Triqui juego) {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
@@ -55,7 +59,11 @@ public class Triqui {
 
 	}
 
-	// Entrada del usuario
+	/**
+	 *  Genera el turno del humano
+	 * @param tabla
+	 */
+	@SuppressWarnings("resource")
 	public void turnoHuman(Tablero tabla) {
 		System.out.println("Human :");
 		Scanner entrada = new Scanner(System.in);
@@ -70,10 +78,16 @@ public class Triqui {
 			System.out.println("Casilla Marcada Intenteleo de nuevo");
 			turnoHuman(tabla);
 		} else
+			System.out.println("Human :");
 			tabla.set(linea, colomna, "X");
 	}
 
-	// Generar sucesores de un estado
+	/**
+	 * Generar sucesores de un estado
+	 * @param estado
+	 * @param turnoH
+	 * @return
+	 */
 	public ArrayList<Tablero> sucesores(Tablero estado, boolean turnoH) {
 		ArrayList<Tablero> result = new ArrayList<Tablero>();
 		String c;
@@ -96,7 +110,9 @@ public class Triqui {
 		return result;
 	}
 
-	// Simulacion del turno de la IA
+	/**
+	 * Simulacion del turno de la IA
+	 */
 	public void turnoIA() {
 		turnoHumano = false;
 		int max, score, profundidad = 9;
@@ -117,7 +133,12 @@ public class Triqui {
 		turnoHumano = true;
 	}
 
-	// Elegir el mejor sucesor (Min-Max)
+	/**
+	 * Elegir el mejor sucesor (Min-Max) 
+	 * @param tab
+	 * @param profundidad
+	 * @return
+	 */
 	public int min(Tablero tab, int profundidad) {
 		// generar hijos del estado actual
 		ArrayList<Tablero> posibilidades = sucesores(tab, true);
@@ -143,6 +164,12 @@ public class Triqui {
 		return minScore;
 	}
 
+	/**
+	 * Funcion MAX
+	 * @param tab
+	 * @param profundidad
+	 * @return
+	 */
 	public int max(Tablero tab, int profundidad) {
 		// generar hijos del estado actual
 		ArrayList<Tablero> posibilidades = sucesores(tab, false);
