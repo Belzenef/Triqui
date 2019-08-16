@@ -5,24 +5,24 @@ public class Tablero {
 	/**
 	 * Representacion de Estados
 	 */
-	String matrizTablero[][] = new String[3][3];
+	int matrizTablero[][] = new int[3][3];
 	int casillasVacias;
 
 	public static void main(String[] args) {
 		Tablero Tab = new Tablero();
 		System.out.println("ok");
 		System.out.println(Tab.toString());
-		Tab.set(0, 0, "X");
-		Tab.set(1, 2, "X");
-		Tab.set(0, 1, "O");
-		Tab.set(0, 2, "O");
+		Tab.set(0, 0, 1);
+		Tab.set(1, 2, 1);
+		Tab.set(0, 1, 2);
+		Tab.set(0, 2, 2);
 		System.out.println(Tab.toString());
 		int M = Tab.evaluar(true);
 		System.out.println(M);
 		int M2 = Tab.evaluar(false);
 		System.out.println(M2);
-		Tab.set(1, 1, "X");
-		Tab.set(2, 2, "X");
+		Tab.set(1, 1, 1);
+		Tab.set(2, 2, 2);
 		System.out.println(Tab.toString());
 		int M3 = Tab.evaluar(true);
 		System.out.println(M3);
@@ -33,13 +33,13 @@ public class Tablero {
 	public Tablero() {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				matrizTablero[i][j] = " ";
+				matrizTablero[i][j] = 0;
 			}
 		}
 		casillasVacias = 9;
 	}
 
-	public Tablero(String[][] M) {
+	public Tablero(int[][] M) {
 		// Inicializamos variables de la partida
 		matrizTablero = M;
 		casillasVacias = contarCasillasVacias();
@@ -51,7 +51,7 @@ public class Tablero {
 	 * @param c
 	 * @return
 	 */
-	public boolean gano(String c) {
+	public boolean gano(int c) {
 		for (int i = 0; i < 3; i++) {
 			if (matrizTablero[i][0] == c && matrizTablero[i][1] == c && matrizTablero[i][2] == c) {
 				return true;
@@ -80,7 +80,7 @@ public class Tablero {
 		int result = 0;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				if (matrizTablero[i][j] == " ") {
+				if (matrizTablero[i][j] == 0) {
 					result++;
 				}
 			}
@@ -96,13 +96,13 @@ public class Tablero {
 	 */
 	public int evaluar(boolean turnoHumano) {
 		// Verificar si alguien gano o si el tablero esta lleno
-		if (gano("X")) {
+		if (gano(1)) {
 			if (turnoHumano) {
 				return 100 - 9 + casillasVacias;
 			} else {
 				return -100 + 9 - casillasVacias;
 			}
-		} else if (gano("O")) {
+		} else if (gano(2)) {
 			if (turnoHumano) {
 				return -100 + 9 - casillasVacias;
 			} else {
@@ -115,13 +115,13 @@ public class Tablero {
 		// Si la partida no esta terminada
 		int result = 0, countGood = 0, countBad = 0;
 		;
-		String good, bad;
+		int good, bad;
 		if (turnoHumano) {
-			good = "X";
-			bad = "O";
+			good = 1;
+			bad = 2;
 		} else {
-			good = "O";
-			bad = "X";
+			good = 1;
+			bad = 2;
 		}
 
 		// Lineas
@@ -219,32 +219,37 @@ public class Tablero {
 		return result;
 	}
 
+
+
 	/**
-	 *  Permite modificar casillas
+	 * Permite modificar casillas
+	 * 
 	 * @param i
 	 * @param j
 	 * @param x
 	 */
-	public void set(int i, int j, String x) {
+	public void set(int i, int j, int x) {
 		matrizTablero[i][j] = x;
 	}
 
 	/**
 	 * Nos devuelve el contenido de la casilla
+	 * 
 	 * @param i
 	 * @param j
 	 * @return
 	 */
-	public String getCasilla(int i, int j) {
+	public int getCasilla(int i, int j) {
 		return matrizTablero[i][j];
 	}
 
 	/**
 	 * Nos devuelve la matriz
+	 * 
 	 * @return
 	 */
-	public String[][] getMatriz() {
-		String matriz[][] = new String[3][3];
+	public int[][] getMatriz() {
+		int matriz[][] = new int[3][3];
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				matriz[i][j] = this.matrizTablero[i][j];
@@ -253,16 +258,25 @@ public class Tablero {
 		return matriz;
 	}
 
-
-/**
- *  Representa graficamente la matriz
- */
+	/**
+	 * Representa graficamente la matriz
+	 */
 	public String toString() {
 		String result = "";
+		String ficha = " ";
 		for (int i = 0; i < 3; i++) {
 			result += "|";
 			for (int j = 0; j < 3; j++) {
-				result += matrizTablero[i][j] + "|";
+				if (matrizTablero[i][j] == MiniMax.CASILLA_VACIA) {
+					ficha = " ";
+				}
+				if (matrizTablero[i][j] == MiniMax.CASILLA_PERSONA) {
+					ficha = "X";
+				}
+				if (matrizTablero[i][j] == MiniMax.CASILLA_ORDENADOR) {
+					ficha = "O";
+				}
+				result += ficha + "|";
 			}
 			result += "\n";
 		}

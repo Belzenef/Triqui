@@ -10,62 +10,71 @@ public class Triqui {
 	// Indicador de turno de jugador
 	boolean turnoHumano;
 
+	// Implementación del algoritmo minimax
+	final MiniMax minimax;
 
 	public static void main(String[] args) {
 		Triqui juego = new Triqui();
 		System.out.println("Init Game");
-		System.out.println(juego.tabla.toString());
 
 		juego.turno(juego);
 	}
 
-	
 	public Triqui() {
 		turnoHumano = true;
+		minimax = new MiniMax(3, 3);
 	}
 
 	/**
 	 * Gestor de turnos
+	 * 
 	 * @param juego
 	 * @return
 	 */
-	public boolean turno(Triqui juego) {
+	public void turno(Triqui juego) {
+		// Movimiento decidido por el ordenador
+		Movimiento mov;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				if (turnoHumano = true) {
-					turnoHumano = false;
-					//turno humano
-					juego.turnoHuman(juego.tabla);
-					System.out.println(juego.tabla.toString());
-					// IA plays
-					juego.turnoIA();
-					System.out.println("IA :");
-					System.out.println(juego.tabla.toString());
-				}
-				if (tabla.gano("X")) {
+				if (juego.tabla.gano(MiniMax.CASILLA_PERSONA)) {
 					System.out.println("//******GANADOR******//");
-					return true;
-				} else if (tabla.gano("O")) {
+					turnoHumano = false;
+				} else if (juego.tabla.gano(MiniMax.CASILLA_ORDENADOR)) {
 					System.out.println("//******PERDEDOR******//");
-					return true;
-				} else if (tabla.contarCasillasVacias() == 0) {
-					System.out.println("//******TABLERO LLENO******//");
-					return true;
+					turnoHumano = false;
+				} else if (tabla.contarCasillasVacias() == MiniMax.CASILLA_VACIA) {
+					System.out.println("//******EMPATE******//");
+					turnoHumano = false;
+				}
+				if (turnoHumano) {
+					turnoHumano = false;
+					// turno humano
+					juego.turnoHuman(juego.tabla);
+
+					// Lanza el algoritmo minimax y recoge el movimiento elegido
+					mov = minimax.minimax(tabla.getMatriz());
+					if (mov.getPosX() != -1 && mov.getPosY() != -1) {
+						// Dibujamos el movimiento del ordenador
+						tabla.set(mov.getPosX(), mov.getPosY(), MiniMax.CASILLA_ORDENADOR);
+						System.out.println("IA :");
+						System.out.println(tabla.toString());
+						turnoHumano = true;
+					}
+
 				}
 
 			}
 		}
-		return false; 
 
 	}
 
 	/**
-	 *  Genera el turno del humano
+	 * Genera el turno del humano
+	 * 
 	 * @param tabla
 	 */
 	@SuppressWarnings("resource")
 	public void turnoHuman(Tablero tabla) {
-		System.out.println("Human :");
 		Scanner entrada = new Scanner(System.in);
 		System.out.println("Escoja fila de 0 a 2 ");
 		int linea = entrada.nextInt();
@@ -74,31 +83,36 @@ public class Triqui {
 		if (linea > 2 | colomna > 2) {
 			System.out.println("Fuera de rango intentelo de nuevo");
 			turnoHuman(tabla);
-		} else if (tabla.getCasilla(linea, colomna) == "X" | tabla.getCasilla(linea, colomna) == "O") {
+		} else if (tabla.getCasilla(linea, colomna) == MiniMax.CASILLA_PERSONA
+				| tabla.getCasilla(linea, colomna) == MiniMax.CASILLA_ORDENADOR) {
 			System.out.println("Casilla Marcada Intenteleo de nuevo");
 			turnoHuman(tabla);
-		} else
+		} else {
 			System.out.println("Human :");
-			tabla.set(linea, colomna, "X");
+			tabla.set(linea, colomna, MiniMax.CASILLA_PERSONA);
+			System.out.println(tabla.toString());
+		}
 	}
 
 	/**
 	 * Generar sucesores de un estado
+	 * 
 	 * @param estado
 	 * @param turnoH
 	 * @return
 	 */
 	public ArrayList<Tablero> sucesores(Tablero estado, boolean turnoH) {
 		ArrayList<Tablero> result = new ArrayList<Tablero>();
-		String c;
+		int c;
 		if (turnoH) {
-			c = "X";
+			c = MiniMax.CASILLA_PERSONA;
 		} else {
-			c = "O";
+			c = MiniMax.CASILLA_ORDENADOR;
 		}
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				if (estado.getCasilla(i, j) != "X" && estado.getCasilla(i, j) != "O") {
+				if (estado.getCasilla(i, j) != MiniMax.CASILLA_PERSONA
+						&& estado.getCasilla(i, j) != MiniMax.CASILLA_ORDENADOR) {
 					Tablero tab = new Tablero(estado.getMatriz());
 					tab.set(i, j, c);
 					result.add(tab);
@@ -110,88 +124,4 @@ public class Triqui {
 		return result;
 	}
 
-	/**
-	 * Simulacion del turno de la IA
-	 */
-	public void turnoIA() {
-		turnoHumano = false;
-		int max, score, profundidad = 9;
-		Tablero mejor, test;
-		ArrayList<Tablero> posibilidades = sucesores(tabla, turnoHumano);
-		mejor = posibilidades.get(0);
-		score = mejor.evaluar(turnoHumano);
-		max = score;
-		for (int i = 1; i < posibilidades.size(); i++) {
-			test = posibilidades.get(i);
-			score = min(test, profundidad);
-			if (score > max) {
-				max = score;
-				mejor = test;
-			}
-		}
-		tabla = mejor;
-		turnoHumano = true;
-	}
-
-	/**
-	 * Elegir el mejor sucesor (Min-Max) 
-	 * @param tab
-	 * @param profundidad
-	 * @return
-	 */
-	public int min(Tablero tab, int profundidad) {
-		// generar hijos del estado actual
-		ArrayList<Tablero> posibilidades = sucesores(tab, true);
-
-		// verificar si el estado actual es una hoja del arbol
-		if (tab.gano("X") || tab.gano("O") || posibilidades.size() == 0) {
-			return tab.evaluar(true);
-		}
-
-		int minScore = 100, score;
-		Tablero mejor, test;
-		mejor = posibilidades.get(0);
-		score = mejor.evaluar(true);
-		minScore = score;
-		for (int i = 1; i < posibilidades.size(); i++) {
-			test = posibilidades.get(i);
-			score = max(test, profundidad - 1);
-			if (score < minScore) {
-				minScore = score;
-				mejor = test;
-			}
-		}
-		return minScore;
-	}
-
-	/**
-	 * Funcion MAX
-	 * @param tab
-	 * @param profundidad
-	 * @return
-	 */
-	public int max(Tablero tab, int profundidad) {
-		// generar hijos del estado actual
-		ArrayList<Tablero> posibilidades = sucesores(tab, false);
-
-		// verificar si el estado actual es una hoja del arbol
-		if (tab.gano("X") || tab.gano("O") || posibilidades.size() == 0) {
-			return tab.evaluar(false);
-		}
-
-		int maxScore = -100, score;
-		Tablero mejor, test;
-		mejor = posibilidades.get(0);
-		score = mejor.evaluar(false);
-		maxScore = score;
-		for (int i = 1; i < posibilidades.size(); i++) {
-			test = posibilidades.get(i);
-			score = min(test, profundidad - 1);
-			if (score > maxScore) {
-				maxScore = score;
-				mejor = test;
-			}
-		}
-		return maxScore;
-	}
 }
